@@ -2,11 +2,9 @@
   "realm": "example",
   "auth-server-url": "http://localhost:8080/auth/",
   "ssl-required": "external",
-  "resource": "account",
+  "resource": "example",
+  "public-client": true,
   "verify-token-audience": true,
-  "credentials": {
-    "secret": "73774da6-1c68-4a76-ba86-093392f2f863"
-  },
   "use-resource-role-mappings": true,
   "confidential-port": 0
 }

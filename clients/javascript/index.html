@@ -3,19 +3,36 @@
 <head>
     <script src="http://localhost:8080/auth/js/keycloak.js"></script>
     <script>
+        var keycloak;
         function initKeycloak() {
-            var keycloak = new Keycloak();
+            keycloak = new Keycloak();
             keycloak.init({
                 flow: 'implicit'
             }).then(function(authenticated) {
-                alert(authenticated ? 'authenticated' : 'not authenticated');
-            }).catch(function() {
-                alert('failed to initialize');
+                document.getElementById('status-authenticated').textContent = authenticated
+            }).catch(function(exception) {
+                document.getElementById('status-error').textContent = JSON.stringify(exception);
             });
         }
     </script>
 </head>
 <body onload="initKeycloak()">
-<!-- your page content goes here -->
+<p>
+    <h2>Actions</h2>
+    <ul>
+        <li><a href="javascript: keycloak.login()">Login</a></li>
+    </ul>
+</p>
+<p>
+    <h2>Status</h2>
+    <dl>
+        <dt>Authenticated</dt>
+        <dd id="status-authenticated"></dd>
+    </dl>
+    <dl>
+        <dt>Error</dt>
+        <dd id="status-error"></dd>
+    </dl>
+</p>
 </body>
 </html>

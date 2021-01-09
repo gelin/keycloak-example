@@ -12,4 +12,11 @@ services:
       DB_VENDOR: 'h2'
       KEYCLOAK_IMPORT: '/tmp/keycloak/realm-example.json'
     volumes:
-      - './keycloak:/tmp/keycloak'
+      - './keycloak:/tmp/keycloak:ro'
+
+  nginx:
+    image: 'nginx:alpine'
+    ports:
+      - '8081:80'
+    volumes:
+      - './clients/javascript:/usr/share/nginx/html:ro'
