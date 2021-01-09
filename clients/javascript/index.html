@@ -10,8 +10,15 @@
                 flow: 'implicit'
             }).then(function(authenticated) {
                 document.getElementById('status-authenticated').textContent = authenticated
+                document.getElementById('keycloak-subject').textContent = keycloak.subject
+                document.getElementById('keycloak-token').textContent = keycloak.token
+                document.getElementById('keycloak-token-parsed').textContent = JSON.stringify(keycloak.tokenParsed, null, '  ')
+                document.getElementById('keycloak-idtoken').textContent = keycloak.idToken
+                document.getElementById('keycloak-idtoken-parsed').textContent = JSON.stringify(keycloak.idTokenParsed, null, '  ')
+                document.getElementById('keycloak-refreshtoken').textContent = keycloak.refreshToken
+                document.getElementById('keycloak-refreshtoken-parsed').textContent = JSON.stringify(keycloak.refreshTokenParsed, null, '  ')
             }).catch(function(exception) {
-                document.getElementById('status-error').textContent = JSON.stringify(exception);
+                document.getElementById('status-error').textContent = JSON.stringify(exception, null, '  ');
             });
         }
     </script>
@@ -21,17 +28,27 @@
     <h2>Actions</h2>
     <ul>
         <li><a href="javascript: keycloak.login()">Login</a></li>
+        <li><a href="javascript: keycloak.logout()">Logout</a></li>
     </ul>
 </p>
 <p>
     <h2>Status</h2>
     <dl>
-        <dt>Authenticated</dt>
+        <dt>authenticated</dt>
         <dd id="status-authenticated"></dd>
-    </dl>
-    <dl>
-        <dt>Error</dt>
-        <dd id="status-error"></dd>
+        <dt>error</dt>
+        <dd><pre id="status-error"></pre></dd>
+        <dt>subject</dt>
+        <dd id="keycloak-subject"></dd>
+        <dt>token</dt>
+        <dd id="keycloak-token"></dd>
+        <dd><pre id="keycloak-token-parsed"></pre></dd>
+        <dt>id token</dt>
+        <dd id="keycloak-idtoken"></dd>
+        <dd><pre id="keycloak-idtoken-parsed"></pre></dd>
+        <dt>refresh token</dt>
+        <dd id="keycloak-refreshtoken"></dd>
+        <dd><pre id="keycloak-refreshtoken-parsed"></pre></dd>
     </dl>
 </p>
 </body>
