@@ -1,37 +1,40 @@
 #! /usr/bin/env python
 
-# See: https://github.com/larsw/flask-oidc-ex/blob/master/examples/api.py
+# See https://pythonhosted.org/Flask-JWT/
 
-# This example is not working.
-# Because by default the nbf claim in the token is required
-# when the JWT is verified by the python-jwt lib,
-# but the claim not provided by Keycloak (https://lists.jboss.org/pipermail/keycloak-user/2019-January/017014.html)
-# and it's not possible to configure the behavior in flast-oidc-ex.
+# This also doesn't work by default because Flask-JWT doesn't support RSA tokens.
+# See https://ai-facets.org/how-to-use-rs256-tokens-with-flask-jwt/
 
-import json
 import logging
 
 from flask import Flask
-from flask_oidc_ex import OpenIDConnect
+from flask_jwt import JWT, jwt_required, current_identity
 
 logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
-
 app.config.update({
     'TESTING': True,
     'DEBUG': True,
-    'OIDC_PROVIDER': 'http://keycloak:8080/auth/realms/example',
-    'OIDC_RESOURCE_SERVER_ONLY': True,
-    'OIDC_RESOURCE_SERVER_VALIDATION_MODE': 'offline',
-    'OIDC_USER_INFO_ENABLED': False,
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+    'JWT_ALGORITHM': 'RS256',
+    'JWT_VERIFY': False,    # TODO
     'JWT_REQUIRED_CLAIMS': ['exp', 'iat']
 })
-oidc = OpenIDConnect(app)
+
+
+def authenticate(username, password):
+    return None
+
+
+def identity(payload):
+    return payload
+
+
+jwt = JWT(app, authenticate, identity)
 
 
 @app.route("/whoami")
-@oidc.accept_token(require_token=True)
+@jwt_required()
 def whoami():
-    info = oidc.user_getinfo(['email', 'given_name', 'family_name'])
-    return json.dumps(info)
+    return '%s' % current_identity
