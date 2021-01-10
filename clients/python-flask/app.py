@@ -1,14 +1,15 @@
 #! /usr/bin/env python
 
-# See https://pythonhosted.org/Flask-JWT/
+# See: https://flask-oidc2.readthedocs.io/en/latest/
 
-# This also doesn't work by default because Flask-JWT doesn't support RSA tokens.
-# See https://ai-facets.org/how-to-use-rs256-tokens-with-flask-jwt/
+# This OIDC implementation supports Google+ and Ipsilon, but not Keycloak directly.
+# So, it's not configured easily for Keycloak.
 
+import json
 import logging
 
-from flask import Flask
-from flask_jwt import JWT, jwt_required, current_identity
+from flask import Flask, g
+from flask_oidc import OpenIDConnect
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -16,25 +17,15 @@ app = Flask(__name__)
 app.config.update({
     'TESTING': True,
     'DEBUG': True,
-    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-    'JWT_ALGORITHM': 'RS256',
-    'JWT_VERIFY': False,    # TODO
-    'JWT_REQUIRED_CLAIMS': ['exp', 'iat']
+    'OIDC_PROVIDER': 'http://keycloak:8080/auth/realms/example',
+    'OIDC_CLIENT_SECRETS': 'client_secrets.json',
+    'OIDC_RESOURCE_SERVER_ONLY': True,
+    'OIDC_USER_INFO_ENABLED': False,
 })
-
-
-def authenticate(username, password):
-    return None
-
-
-def identity(payload):
-    return payload
-
-
-jwt = JWT(app, authenticate, identity)
+oidc = OpenIDConnect(app)
 
 
 @app.route("/whoami")
-@jwt_required()
+@oidc.accept_token()
 def whoami():
-    return '%s' % current_identity
+    return json.dumps(g.oidc_token_info)
