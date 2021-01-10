@@ -4,6 +4,7 @@ import logging
 import re
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -12,6 +13,7 @@ app.config.update({
     'TESTING': True,
     'DEBUG': True,
 })
+CORS(app)
 
 
 @app.route("/whoami")

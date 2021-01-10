@@ -3,7 +3,7 @@
 <head>
     <script src="http://localhost:8080/auth/js/keycloak.js"></script>
     <script>
-        var keycloak;
+        let keycloak;
         function initKeycloak() {
             keycloak = new Keycloak();
             keycloak.init({
@@ -17,8 +17,24 @@
                 document.getElementById('keycloak-idtoken-parsed').textContent = JSON.stringify(keycloak.idTokenParsed, null, '  ')
                 document.getElementById('keycloak-refreshtoken').textContent = keycloak.refreshToken
                 document.getElementById('keycloak-refreshtoken-parsed').textContent = JSON.stringify(keycloak.refreshTokenParsed, null, '  ')
-            }).catch(function(exception) {
-                document.getElementById('status-error').textContent = JSON.stringify(exception, null, '  ');
+            }).catch(function(error) {
+                document.getElementById('status-error').textContent = JSON.stringify(error, null, '  ');
+            });
+        }
+    </script>
+    <script>
+        function flaskWhoami() {
+            fetch('http://localhost:5000/whoami', {
+                headers: {
+                    'Authorization': 'Bearer ' + keycloak.token,
+                }
+            }).then(function(response) {
+                return response.text();
+            }).then(function(response) {
+                console.log('Received: ', response);
+                document.getElementById('whoami-result').textContent = response;
+            }).catch(function(error) {
+                document.getElementById('status-error').textContent = JSON.stringify(error, null, '  ');
             });
         }
     </script>
@@ -29,6 +45,7 @@
     <ul>
         <li><a href="javascript: keycloak.login()">Login</a></li>
         <li><a href="javascript: keycloak.logout()">Logout</a></li>
+        <li><a href="javascript: flaskWhoami()">Flask Whoami</a></li>
     </ul>
 </p>
 <p>
@@ -36,6 +53,8 @@
     <dl>
         <dt>authenticated</dt>
         <dd id="status-authenticated"></dd>
+        <dt>whoami</dt>
+        <dd><pre id="whoami-result"></pre></dd>
         <dt>error</dt>
         <dd><pre id="status-error"></pre></dd>
         <dt>subject</dt>
