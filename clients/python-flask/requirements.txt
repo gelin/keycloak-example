@@ -1,2 +1,2 @@
 Flask==1.1.2
-flask-oidc2==1.5.0
+Flask-JWT-Extended==3.25.0

@@ -1,15 +1,14 @@
 #! /usr/bin/env python
 
-# See: https://flask-oidc2.readthedocs.io/en/latest/
+# See: https://flask-jwt-extended.readthedocs.io/en/stable/basic_usage/
 
-# This OIDC implementation supports Google+ and Ipsilon, but not Keycloak directly.
-# So, it's not configured easily for Keycloak.
+# Looks like RS256 is not supported :(
 
 import json
 import logging
 
-from flask import Flask, g
-from flask_oidc import OpenIDConnect
+from flask import Flask
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -17,15 +16,14 @@ app = Flask(__name__)
 app.config.update({
     'TESTING': True,
     'DEBUG': True,
-    'OIDC_PROVIDER': 'http://keycloak:8080/auth/realms/example',
-    'OIDC_CLIENT_SECRETS': 'client_secrets.json',
-    'OIDC_RESOURCE_SERVER_ONLY': True,
-    'OIDC_USER_INFO_ENABLED': False,
+    'JWT_ALGORITHM': 'RS256',
+    'JWT_PUBLIC_KEY': 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlIMeXCeQJ3lzYrcMA1b/rhDO/QcR7VH0A+VWrcRglp9E9JabzGKyHTwiZHqFOwIhCGCsCSO1EOOCe+/kjjojTdS5fi8eTY7XCL0yFcJTzWWSMiZWq42pMMFGpIz7piaBTKr7DFYt4kN4zTfGlC140W7zyCqLM3QGK7Pfgtlstof1zA6urjNWDzTDqvfQvUEwX/kfnrSOBC2+9aIcv2dYz9BXbvhdstEn9k3fLfrG6ZD+FwhLWm1suq80SUHtmf6Iz/F8245ieSU0YN2QObYjAoiwruD5KXUikJQcqeZK1jAGTSqSxtXnvuN6M/Qq52Nu2lSKCE7AJaaf9EuDkJ3PJwIDAQAB'  # TODO: download it from Keycloak
 })
-oidc = OpenIDConnect(app)
+jwt = JWTManager(app)
 
 
 @app.route("/whoami")
-@oidc.accept_token()
+@jwt_required
 def whoami():
-    return json.dumps(g.oidc_token_info)
+    current_user = get_jwt_identity()
+    return json.dumps(current_user)
